@@ -1,0 +1,9 @@
+# secrets and local environment
+.env
+.venv/
+__pycache__/
+.DS_Store
+# data is downloaded by the notebooks, never committed
+data/
+# personal planning notes
+_private/
