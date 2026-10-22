@@ -1,0 +1,3 @@
+# PyPI libraries installed on the cluster in addition to Databricks Runtime 15.4 LTS
+# seaborn>=0.13 is required by notebook 02 (barplot legend=False)
+seaborn==0.13.2

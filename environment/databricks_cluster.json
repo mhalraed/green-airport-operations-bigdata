@@ -1,0 +1,12 @@
+{
+  "cluster_name": "airgreenops-cluster",
+  "spark_version": "15.4.x-scala2.12",
+  "node_type_id": "m5d.xlarge",
+  "driver_node_type_id": "m5d.xlarge",
+  "num_workers": 2,
+  "autotermination_minutes": 20,
+  "data_security_mode": "SINGLE_USER",
+  "spark_conf": {"spark.sql.adaptive.enabled": "true"},
+  "aws_attributes": {"availability": "SPOT_WITH_FALLBACK", "first_on_demand": 1, "zone_id": "auto"},
+  "custom_tags": {"project": "airgreenops-thesis"}
+}
