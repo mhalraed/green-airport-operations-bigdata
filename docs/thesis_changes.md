@@ -12,6 +12,7 @@ Original data tables are kept frozen in schema `new.airgreenops_em06ds` for befo
 | A3 | 2026-10-22 | 02 / cell 11 | `auc()` -> `roc_auc_score()` | sklearn `auc` overwritten by a float | Reproduction only | 92f47c2 |
 | A4 | 2026-10-22 | cluster | seaborn 0.13.2 | `legend=False` needs seaborn >= 0.13 | Reproduction only | b708910 |
 | B1 | 2026-10-22 | 01 / cell 13 | Weather joined on UTC hour (airport time zone, DST-aware) | BTS times are local, NOAA hours are UTC; old join was 5-8 h off | Warmest local hour (season-adjusted): 19-23 h -> 13-16 h at all 10 airports. corr(rain, taxi-out) 0.024 -> 0.056; corr(wind, taxi-out) 0.056 -> 0.080; corr(rain, departure delay) 0.038 -> 0.070. Mean taxi-out wet vs dry hours: +3.3 min -> +6.1 min. Rows unchanged (20,588,136); weather coverage unchanged (88.1%, ISD-Lite 2025 ends 27 Aug) | 4f70668 |
+| B2 | 2026-10-23 | 01 / cells 3, 6, 10 | Weather source ISD-Lite -> NOAA GHCNh hourly; NOAA quality flags applied (letter codes and legacy 2/3/6/7 removed); hourly precipitation = last report in hour, trace = 0 mm; other variables = hourly mean | ISD-Lite 2025 files end 27 Aug 2025 (11.9% of flights at the 10 airports had no weather); ISD-Lite is retired and replaced by GHCNh; old code read trace precipitation (-1) as -0.1 mm | Pending run | (this commit) |
 
 Details of the reproduction: `docs/reproduction_log.md`.
 
