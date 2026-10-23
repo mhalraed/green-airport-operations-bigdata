@@ -15,7 +15,7 @@ Original data tables are kept frozen in schema `new.airgreenops_em06ds` for befo
 | B2 | 2026-10-23 | 01 / cells 3, 6, 10 | Weather source ISD-Lite -> NOAA GHCNh hourly; NOAA quality flags applied (letter codes and legacy 2/3/6/7 removed); hourly precipitation = last report in hour, trace = 0 mm; other variables = hourly mean | ISD-Lite 2025 files end 27 Aug 2025 (11.9% of flights at the 10 airports had no weather); ISD-Lite is retired and replaced by GHCNh; old code read trace precipitation (-1) as -0.1 mm | Weather coverage at 10 airports 88.1% -> 99.5% (2025: 65.2% -> 98.7%; Sep-Dec 2025: 0% -> 98.1%). Negative precipitation rows 263,685 -> 0. QC removed 0.025% of temperature and 0.007% of wind observations. Warmest hour still 12-15 h local. Cumulative vs May (B1+B2): corr(rain, taxi-out) 0.024 -> 0.088; corr(wind, taxi-out) 0.056 -> 0.086; wet-hour taxi-out penalty +3.3 -> +7.0 min | b887e2d, 7860dc5 |
 | B2a | 2026-10-23 | 01 / cells 3, 6 | GHCNh station column name `STATION` (was coded as `Station_ID`) | Wrong header name; first B2 run rejected all files. All other column names verified against a real file | Fix for B2 only | 7860dc5 |
 | B4 | 2026-10-23 | 01 / cells 9, 13, new cell 49 | Keep arrival columns (taxi-in, arrival delay, scheduled arrival hour, arrivals per hour); taxi-in CO2 and avoidable taxi-in CO2 per flight (same method as taxi-out); new Gold table `gold_airport_ground_co2` = taxi-out at origin + taxi-in at destination, with CO2 per movement | EM06DS kept only departure columns, so about a third of taxi time (taxi-in) was missing; proposal scope includes taxi-in | Taxi-in present for 100% of flights. Taxi-in = 31.8% of total taxi CO2 (2023-2025). Across airports with >=50k movements the taxi-in share ranges 20.4% (BUR) to 40.6% (ORD). Ranking of the 30 busiest airports: taxi-out per departure vs total per movement, rank correlation 0.93, 12 airports move >=3 places (largest: DFW 15th -> 6th). Silver 57 columns, Gold 77 columns, 341 airports in gold_airport_ground_co2 | b7027b3 |
-| B3 | 2026-10-23 | 01 / new cell 5, cells 9, 13, 14; reference/, scripts/ | Aircraft type from tail number (BTS Schedule B-43 inventory) instead of flight distance; taxi fuel burn = ICAO databank median idle fuel flow x engines for 38 aircraft families; EM06DS distance-based value kept only as fallback, flagged in `fuel_burn_source` | EM06DS assigned aircraft group from flight distance and used a 4-row assumed fuel table | Pending run | (this commit) |
+| B3 | 2026-10-23 | 01 / new cell 5, cells 9, 13, 14; reference/, scripts/ | Aircraft type from tail number (BTS Schedule B-43 inventory) instead of flight distance; taxi fuel burn = ICAO databank median idle fuel flow x engines for 38 aircraft families; EM06DS distance-based value kept only as fallback, flagged in `fuel_burn_source` | EM06DS assigned aircraft group from flight distance and used a 4-row assumed fuel table | 97.9% of flights use ICAO-based fuel burn (2.1% distance fallback). Mean taxi fuel burn 10.9 -> 11.9 kg/min; total taxi CO2 2023-2025 (out + in) 18.8 -> 20.2 Mt (+7.7%). Airport CO2 per movement changes -5% (SEA) to +29% (ATL); among the 30 busiest airports rank correlation 0.90, 10 airports move >=3 places (ATL 22nd -> 12th, CLT 12th -> 5th, LGA 9th -> 17th, BOS 8th -> 16th). JFK still highest of the 10 study airports | 7341012 |
 
 Details of the reproduction: `docs/reproduction_log.md`.
 
@@ -35,3 +35,13 @@ precipitation only in observations that carry a precipitation group; hours witho
 Fuel burn per minute for both taxi-out and taxi-in still comes from the EM06DS distance-based aircraft group
 (4-row reference table). Airport CO2 per movement therefore still partly reflects route length mix. B3 replaces
 this with aircraft type from tail number and ICAO engine fuel flow.
+
+## B3 note on interpretation
+Airport differences in CO2 per movement depend strongly on aircraft and engine mix (an airline fleet choice),
+not only on taxi times (airport operations). Example: ATL rises 29% because its short-haul flights are often
+flown by A320/A321 (V2500) and 757 aircraft, which the distance rule treated as regional jets. RQ2 therefore
+must control for aircraft mix when comparing airport performance.
+
+## Open item: freeze weather inputs
+GHCNh files are updated after release: the B3 run read 388,102 observations (262,663 hours) against 387,066
+(261,946) one day earlier. Keep a dated copy of the weather files used for the final results.
