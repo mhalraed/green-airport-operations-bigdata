@@ -1,0 +1,8 @@
+order,pattern,replacement,reason
+1,\s+,,remove spaces
+2,^BOEING,,manufacturer name typed into model field
+3,^B(?=7[0-9]{2}),,Boeing prefix before model number
+4,^AA(?=3[0-9]{2}),A,typo in source (AA321)
+5,^(?=3[12][0-9]-),A,missing Airbus prefix (320-214)
+6,^737NG,737-,737NG7H4 written without dash
+7,^ERJE,ERJ,ERJE190 spelling
