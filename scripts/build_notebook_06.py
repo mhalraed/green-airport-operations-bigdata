@@ -193,6 +193,10 @@ turn_agg = (
     )
     .toPandas()
 )
+# Save the components so the dashboard (notebook 03) can recalculate scenarios without Spark jobs
+for name, frame in [("rq3_components_departures", dep_agg), ("rq3_components_arrivals", arr_agg), ("rq3_components_turnarounds", turn_agg)]:
+    spark.createDataFrame(frame).write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(name)
+
 print("Components ready:", len(dep_agg), len(arr_agg), len(turn_agg), "airport-class rows")""")
 
 code("""# Scenario calculator: kg CO2 saved per airport for any combination of assumptions
