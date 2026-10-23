@@ -11,3 +11,10 @@
 
 Superseded: NOAA ISD-Lite (used in EM06DS). Its 2025 files end on 27 Aug 2025 and the product is retired.
 EASA download page: https://www.easa.europa.eu/en/domains/environment/icao-aircraft-engine-emissions-databank
+
+## Frozen input snapshot (2026-10-23)
+All raw inputs used for the thesis results are frozen in the Databricks volume at
+`/Volumes/new/airgreenops/project_data/airgreenops/snapshots/2026-10-23/` (72 files: BTS, GHCNh, OurAirports, B-43).
+File sizes and SHA-256 checksums: `docs/input_snapshot_2026-10-23.csv`.
+To rebuild from the snapshot instead of downloading, run notebook 01 with the widget `input_snapshot = 2026-10-23`.
+Reason: GHCNh and OurAirports change after release (GHCNh observations changed between two runs one day apart).
