@@ -1,6 +1,7 @@
 # PyPI libraries installed on the cluster in addition to Databricks Runtime 15.4 LTS
 # seaborn>=0.13 is required by notebook 02 (barplot legend=False)
 seaborn==0.13.2
+# notebook 03 installs its own: gradio==4.44.1 huggingface_hub==0.25.2 (gradio 4.44 needs huggingface_hub < 1.0)
 # notebook 04: gradient-boosted trees and SHAP explanations
 lightgbm==4.5.0
 shap==0.46.0
