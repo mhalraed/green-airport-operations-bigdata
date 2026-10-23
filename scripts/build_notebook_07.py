@@ -21,7 +21,8 @@ Two representative workloads from the thesis pipeline are timed on 25%, 50% and 
 2. **Fixed-effects regression (Spark MLlib)**: the RQ2 taxi-out model with airport, airline, aircraft family and time dummies
    solved with the normal equations (notebook 05).
 
-The notebook is run once per cluster size (1, 2 and 4 workers); each run appends its timings to `scaling_benchmark`.""")
+The notebook is run once per cluster size (1, 2 and 4 workers), each on its own fixed-size job cluster with the widget
+`expected_workers` set; each run appends its timings to `scaling_benchmark`.""")
 
 code("""# Configuration
 import time
@@ -36,14 +37,19 @@ from pyspark.ml.regression import LinearRegression
 spark.sql("USE CATALOG `new`")
 spark.sql("USE SCHEMA `airgreenops`")
 
-# Wait until every configured worker has registered with Spark (new workers join a little after a resize)
-expected_workers = int(spark.conf.get("spark.databricks.clusterUsageTags.clusterWorkers", "0"))
+# Each run uses its own fixed-size job cluster; the job passes the expected worker count.
+# Wait until that many workers have registered with Spark, and stop if they never do.
+try:
+    dbutils.widgets.text("expected_workers", "0")
+except Exception:
+    pass
+expected_workers = int(dbutils.widgets.get("expected_workers") or 0)
 deadline = time.time() + 600
 while sc._jsc.sc().getExecutorMemoryStatus().size() - 1 < expected_workers and time.time() < deadline:
     time.sleep(10)
 workers = sc._jsc.sc().getExecutorMemoryStatus().size() - 1
 cores = sc.defaultParallelism
-if workers != expected_workers:
+if expected_workers and workers != expected_workers:
     raise Exception(f"Only {workers} of {expected_workers} workers registered; timings would be mislabelled")
 REPEATS = 2
 print("Workers:", workers, "| total cores:", cores)
@@ -87,13 +93,14 @@ def workload_mllib(df):
 
 print("Workloads defined")""")
 
-code("""# Time each workload on 25%, 50% and 100% of the data, REPEATS times each
+code("""# Time each workload on 25%, 50% and 100% of the data: one untimed warm-up, then REPEATS timed runs
 # (data cached before timing, so I/O from cloud storage is excluded; the median of the repeats is reported)
 rows = []
 for fraction in [0.25, 0.5, 1.0]:
     df = (base if fraction == 1.0 else base.sample(False, fraction, seed=42)).cache()
     n = df.count()
     for name, fn in [("sql_congestion_aggregation", workload_sql), ("mllib_fixed_effects_regression", workload_mllib)]:
+        fn(df)  # untimed warm-up run (the first run is slower: code generation and caching)
         for repeat in range(1, REPEATS + 1):
             start = time.time()
             fn(df)
