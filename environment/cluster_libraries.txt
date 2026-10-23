@@ -1,3 +1,6 @@
 # PyPI libraries installed on the cluster in addition to Databricks Runtime 15.4 LTS
 # seaborn>=0.13 is required by notebook 02 (barplot legend=False)
 seaborn==0.13.2
+# notebook 04: gradient-boosted trees and SHAP explanations
+lightgbm==4.5.0
+shap==0.46.0
