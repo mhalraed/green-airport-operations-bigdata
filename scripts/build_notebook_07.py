@@ -36,7 +36,7 @@ from pyspark.ml.regression import LinearRegression
 spark.sql("USE CATALOG `new`")
 spark.sql("USE SCHEMA `airgreenops`")
 
-workers = len(sc._jsc.sc().getExecutorMemoryStatus()) - 1
+workers = sc._jsc.sc().getExecutorMemoryStatus().size() - 1
 cores = sc.defaultParallelism
 print("Workers:", workers, "| total cores:", cores)
 
