@@ -36,8 +36,16 @@ from pyspark.ml.regression import LinearRegression
 spark.sql("USE CATALOG `new`")
 spark.sql("USE SCHEMA `airgreenops`")
 
+# Wait until every configured worker has registered with Spark (new workers join a little after a resize)
+expected_workers = int(spark.conf.get("spark.databricks.clusterUsageTags.clusterWorkers", "0"))
+deadline = time.time() + 600
+while sc._jsc.sc().getExecutorMemoryStatus().size() - 1 < expected_workers and time.time() < deadline:
+    time.sleep(10)
 workers = sc._jsc.sc().getExecutorMemoryStatus().size() - 1
 cores = sc.defaultParallelism
+if workers != expected_workers:
+    raise Exception(f"Only {workers} of {expected_workers} workers registered; timings would be mislabelled")
+REPEATS = 2
 print("Workers:", workers, "| total cores:", cores)
 
 major = [r["airport"] for r in spark.table("rq2_airport_ranking").select("airport").collect()]
@@ -79,17 +87,20 @@ def workload_mllib(df):
 
 print("Workloads defined")""")
 
-code("""# Time each workload on 25%, 50% and 100% of the data (data cached before timing, so I/O from cloud storage is excluded)
+code("""# Time each workload on 25%, 50% and 100% of the data, REPEATS times each
+# (data cached before timing, so I/O from cloud storage is excluded; the median of the repeats is reported)
 rows = []
 for fraction in [0.25, 0.5, 1.0]:
     df = (base if fraction == 1.0 else base.sample(False, fraction, seed=42)).cache()
     n = df.count()
     for name, fn in [("sql_congestion_aggregation", workload_sql), ("mllib_fixed_effects_regression", workload_mllib)]:
-        start = time.time()
-        fn(df)
-        seconds = time.time() - start
-        rows.append({"workers": workers, "cores": cores, "fraction": fraction, "flights": n, "workload": name, "seconds": round(seconds, 1)})
-        print(f"workers={workers} fraction={fraction:.2f} flights={n:,} {name}: {seconds:.1f} s")
+        for repeat in range(1, REPEATS + 1):
+            start = time.time()
+            fn(df)
+            seconds = time.time() - start
+            rows.append({"workers": workers, "cores": cores, "fraction": fraction, "flights": n, "workload": name,
+                         "repeat": repeat, "seconds": round(seconds, 1)})
+            print(f"workers={workers} fraction={fraction:.2f} flights={n:,} {name} repeat {repeat}: {seconds:.1f} s")
     df.unpersist()
 
 result = pd.DataFrame(rows)
@@ -98,7 +109,11 @@ spark.createDataFrame(result).write.format("delta").mode("append").option("merge
 
 code("""# Summary across all runs so far (one run per cluster size)
 bench = spark.table("scaling_benchmark").toPandas()
-latest = bench.sort_values("run_at").groupby(["workers", "fraction", "workload"]).tail(1)
+last_run = bench.groupby("workers")["run_at"].transform("max")
+latest = (bench[bench["run_at"] == last_run]
+          .groupby(["workers", "fraction", "workload"], as_index=False)
+          .agg(flights=("flights", "first"), seconds=("seconds", "median")))
+print("Median seconds of the repeats (latest run per cluster size):")
 print(latest.pivot_table(index=["workload", "fraction"], columns="workers", values="seconds").to_string())
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
