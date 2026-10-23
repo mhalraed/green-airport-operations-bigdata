@@ -53,12 +53,15 @@ def workload_sql(df):
     deps = df.groupBy("origin", "flight_date", "scheduled_dep_hour").agg(F.count("*").alias("deps_in_hour"))
     arrs = (df.groupBy(F.col("dest").alias("origin"), "flight_date", F.col("scheduled_arr_hour").alias("scheduled_dep_hour"))
               .agg(F.count("*").alias("arrs_in_hour")))
-    out = (df.join(deps, ["origin", "flight_date", "scheduled_dep_hour"], "left")
-             .join(arrs, ["origin", "flight_date", "scheduled_dep_hour"], "left")
-             .groupBy("origin", "aircraft_family")
-             .agg(F.avg("taxi_out_clean").alias("mean_taxi"), F.avg("deps_in_hour").alias("mean_deps"),
-                  F.expr("percentile_approx(taxi_out_clean, 0.2)").alias("p20_taxi")))
-    return out.count()
+    joined = (df.join(deps, ["origin", "flight_date", "scheduled_dep_hour"], "left")
+                .join(arrs, ["origin", "flight_date", "scheduled_dep_hour"], "left"))
+    out = (joined.groupBy("origin", "aircraft_family")
+                 .agg(F.avg("taxi_out_clean").alias("mean_taxi"), F.avg("deps_in_hour").alias("mean_deps"),
+                      F.expr("percentile_approx(taxi_out_clean, 0.2)").alias("p20_taxi")))
+    # Write to the "noop" sink so Spark computes every row and column (a count() lets the optimiser skip work)
+    joined.write.format("noop").mode("overwrite").save()
+    out.write.format("noop").mode("overwrite").save()
+    return None
 
 
 def workload_mllib(df):
