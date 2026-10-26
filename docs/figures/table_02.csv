@@ -1,0 +1,8 @@
+Factor,minutes,ci_low,ci_high,kg_co2_per_flight
++10 departures in the airport-hour,0.633,0.618,0.648,25.016
++10 arrivals in the airport-hour,0.076,0.063,0.089,2.989
+Rain in the hour,6.008,5.862,6.155,237.453
+"Wind, per m/s",0.189,0.18,0.199,7.485
+"Temperature, per deg C",-0.078,-0.082,-0.074,-3.076
+Regional jet vs narrow-body,1.874,1.823,1.924,74.041
+Wide-body vs narrow-body,2.339,2.201,2.478,92.44

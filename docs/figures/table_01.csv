@@ -1,0 +1,5 @@
+Model,mae_min,mae_ci_low,mae_ci_high,rmse_min,r2
+Gradient-boosted trees,6.071,6.06,6.078,9.689,0.204
+Linear regression,6.275,6.265,6.285,10.09,0.137
+Neural network (MLP),6.383,6.372,6.392,10.003,0.151
+Historical average,6.389,6.379,6.399,10.298,0.101

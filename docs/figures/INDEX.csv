@@ -1,0 +1,23 @@
+item,file,title,source
+Figure 1,figure_01.png,"Records through the Bronze, Silver and Gold layers",notebook 01
+Figure 2,figure_02.png,Weather alignment check before and after the UTC correction,notebook 01 (B1); frozen EM06DS tables
+Figure 3,figure_03.png,Mean taxi-out time by congestion and weather,"notebook 04, rq1_model_data"
+Figure 4,figure_04.png,RQ1 model comparison on the 2025 test set,"notebook 04, rq1_model_comparison"
+Table 1,table_01.csv,RQ1 model comparison on the 2025 test set,"notebook 04, rq1_model_comparison"
+Figure 5,figure_05.png,SHAP feature importance for taxi-out,"notebook 04, rq1_shap_importance"
+Figure 6,figure_06.png,RQ1 effect sizes on taxi-out time,"notebook 04, rq1_effect_sizes"
+Table 2,table_02.csv,RQ1 effect sizes in minutes and kg CO2 per flight,"notebook 04, rq1_effect_sizes"
+Figure 7,figure_07.png,EM06DS classification models vs baselines (time-based split),"notebook 02, model_comparison_test_2025"
+Table 3,table_03.csv,Classification metrics on the 2025 test set,"notebook 02, model_comparison_test_2025"
+Figure 8,figure_08.png,RQ2 adjusted ground CO2 per movement by airport,"notebook 05, rq2_airport_ranking"
+Figure 9,figure_09.png,Raw vs adjusted airport ranking,"notebook 05, rq2_airport_ranking"
+Figure 10,figure_10.png,Year-to-year stability of airport effects,"notebook 05, rq2_airport_effects_by_year"
+Figure 11,figure_11.png,Airport characteristics vs adjusted performance,"notebook 05, rq2_airport_profile"
+Table 4,table_04.csv,RQ2 best and worst 10 airports under comparable conditions,"notebook 05, rq2_airport_ranking"
+Figure 12,figure_12.png,RQ3 national savings by measure,"notebook 06, rq3_national_savings"
+Table 5,table_05.csv,"RQ3 tonnes CO2 saved per year (low, central, high)","notebook 06, rq3_national_savings"
+Figure 13,figure_13.png,RQ3 sensitivity analysis,"notebook 06, rq3_sensitivity"
+Figure 14,figure_14.png,Gate-hold saving vs RQ2 airport performance,"notebook 06, rq3_airport_savings"
+Figure 15,figure_15.png,Spark scaling: runtime and speed-up by cluster size,"notebook 07, scaling_benchmark"
+Table 6,table_06.csv,"Spark scaling benchmark, median seconds","notebook 07, scaling_benchmark"
+Table 7,table_07.csv,"Variance inflation factors, RQ1 regression variables","notebook 08, rq1_model_data"

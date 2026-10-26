@@ -1,0 +1,6 @@
+scenario,low,central,high
+1 Gate hold,403953.0,811509.0,1222166.0
+"1b Gate hold, off-peak gate demand only",274372.0,551194.0,830126.0
+2 Single-engine taxi,912860.0,1672797.0,2476228.0
+3 Ground power at stand,133714.0,622792.0,1575759.0
+Combined 1 + 2 + 3,1358246.0,2831710.0,4721170.0

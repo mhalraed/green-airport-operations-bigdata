@@ -1,0 +1,8 @@
+variable,VIF_predictors_only,VIF_with_fixed_effects
+Departures in the airport-hour (per 10),1.28,2.7
+Arrivals in the airport-hour (per 10),1.27,2.14
+Rain in the hour (0/1),1.02,1.03
+Wind speed (m/s),1.01,1.19
+Air temperature (deg C),1.03,3.81
+Aircraft group_regional_jet,1.02,1.11
+Aircraft group_wide_body,1.01,1.03
