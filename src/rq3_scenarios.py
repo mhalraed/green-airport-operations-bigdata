@@ -1,4 +1,4 @@
-"""RQ3 scenario calculator shared by the dashboard (notebook 03).
+"""RQ3 scenario calculator shared by the dashboards (notebook 03 and colab/dashboard_colab.ipynb, via src/thesis_dashboard.py).
 
 Same formulas and assumptions as notebook 06. Inputs are the component tables notebook 06 saves:
 rq3_components_departures, rq3_components_arrivals, rq3_components_turnarounds.
