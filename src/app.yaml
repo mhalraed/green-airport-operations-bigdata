@@ -1,0 +1,8 @@
+command: ["python", "app.py"]
+env:
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: MPLBACKEND
+    value: Agg
+  - name: GRADIO_ANALYTICS_ENABLED
+    value: "False"
